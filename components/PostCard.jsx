@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import PostBottomCard from '../components/PostBottomTab'
 import PostFeedback from '../components/PostFeedback'
+import useTruncateText from "../hooks/useTruncateText";
 
 const PostCard = ({
   userName,
@@ -35,27 +36,38 @@ const PostCard = ({
 
   const [isLiked, setIsLiked] = useState(false);
 
+  // Using custom hook to truncate text
+    const {
+        displayedText: postDisplayedText,
+        expanded: postExpanded,
+        isLongText: isPostLong,
+        toggleText: togglePostText,
+    } = useTruncateText(postText, 100);
+
+    // Using the same custom hook to truncate user title if needed
+    const { displayedText: titleDisplayedText} = useTruncateText(userTitle, 40);
+
   // method to truncate & display the post text
-  const MAX_LENGTH = 100;
-  const isLongText = postText.length > MAX_LENGTH;
-  const showFullText = expandedText || !isLongText;
-  const displayedText = showFullText
-    ? postText
-    : `${postText.slice(0, MAX_LENGTH)}...`;
+//   const MAX_LENGTH = 100;
+//   const isLongText = postText.length > MAX_LENGTH;
+//   const showFullText = expandedText || !isLongText;
+//   const displayedText = showFullText
+//     ? postText
+//     : `${postText.slice(0, MAX_LENGTH)}...`;
 
-    // Condition to add a touch of animation
-    if (
-      Platform.OS === "android" &&
-      UIManager.setLayoutAnimationEnabledExperimental
-    ) {
-      UIManager.setLayoutAnimationEnabledExperimental(true);
-    }
+//     // Condition to add a touch of animation
+//     if (
+//       Platform.OS === "android" &&
+//       UIManager.setLayoutAnimationEnabledExperimental
+//     ) {
+//       UIManager.setLayoutAnimationEnabledExperimental(true);
+//     }
 
-    // Toggle Post Text
-    const toggleText = () => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      setExpandedText((prev) => !prev);
-    };
+//     // Toggle Post Text
+//     const toggleText = () => {
+//       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+//       setExpandedText((prev) => !prev);
+//     };
 
 const handleLike = () => {
   setPostFeedback((prev) => ({
@@ -106,7 +118,7 @@ const handleUserImage = () => {
             )}
           </View>
 
-          <Text style={styles.title}>{userTitle}</Text>
+          <Text style={styles.title}>{titleDisplayedText}</Text>
           <View style={styles.subtitle}>
             <Text style={styles.subtitleText}>{timestamp}</Text>
             {/* <Text style={styles.subtitleText}>.</Text>
@@ -127,14 +139,14 @@ const handleUserImage = () => {
 
       <View>
         {/* Post Text */}
-        <Text style={styles.text}>{displayedText}</Text>
+        <Text style={styles.text}>{postDisplayedText}</Text>
       </View>
       <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
         {/* Show More / Less */}
-        {isLongText && (
-          <Pressable onPress={toggleText}>
+        {isPostLong && (
+          <Pressable onPress={togglePostText}>
             <Text style={styles.more}>
-              {expandedText ? "...less" : "...more"}
+              {postExpanded ? "...less" : "...more"}
             </Text>
           </Pressable>
         )}
