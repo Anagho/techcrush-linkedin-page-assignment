@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LayoutAnimation, Platform, UIManager } from "react-native";
 
 if (
@@ -10,6 +10,10 @@ if (
 
 const useTruncateText = (text = "", maxLength = 100) => {
   const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [text, maxLength]);
 
   const isLongText = text.length > maxLength;
   const showFullText = expanded || !isLongText;
